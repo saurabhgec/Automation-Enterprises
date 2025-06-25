@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Workflow Status Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navigation bar */
+        .navbar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .back-button {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Chart container */
+        .chart-wrapper {
+            margin: 50px auto;
+            padding: 30px;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-wrapper h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>Workflow Dashboard </h1>
+    <a href="{{ url_for('dashboard') }}" class="back-button">← Back</a>
+</div>
+
+<div class="navbar">
+    <h1 style="flex: 1; text-align: center;">Workflow Insights for {{username}}</h1>
+
+
+
+</div>
+
+
+<div class="chart-wrapper">
+    <h2>Workflow Status Overview</h2>
+    <canvas id="statusChart"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Pending', 'In Progress', 'Completed'],
+            datasets: [{
+                label: 'Workflow Status',
+                data: [
+                    {{ workflow_data['Pending'] }},
+                    {{ workflow_data['In Progress'] }},
+                    {{ workflow_data['Completed'] }}
+                ],
+                backgroundColor: [
+                    '#f1c40f',  // Pending
+                    '#3498db',  // In Progress
+                    '#2ecc71'   // Completed
+                ],
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            var label = context.label || '';
+                            var value = context.parsed;
+                            return `${label}: ${value}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

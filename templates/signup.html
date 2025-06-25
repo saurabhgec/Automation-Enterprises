@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        h2 { text-align: center; color: #333; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn { width: 100%; padding: 12px; background: #007bff; color: white; font-size: 18px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        .btn:hover { background: #0056b3; }
+        .terms { margin-top: 10px; font-size: 14px; }
+        .alert { padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Register for Enterprise Automation Suite</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/register" method="post">
+            <label>Full Name</label>
+            <input type="text" name="fullname" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email" required>
+
+            <label>Phone Number</label>
+            <input type="tel" name="phone" required>
+
+            <label>Company Name</label>
+            <input type="text" name="company" required>
+
+            <label>Username</label>
+            <input type="text" name="username" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password" required>
+
+            <label>Created by</label>
+            <input type="text" name="created_by" required>
+
+            <label>User Role</label>
+            <select name="role">
+                <option value="Admin">Admin</option>
+                <option value="Employee">Employee</option>
+            </select>
+
+            <div class="terms">
+                <input type="checkbox" required> I accept the <a href="#">Terms & Conditions</a>
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+            <p style="text-align: center; margin-top: 15px;">
+            Already have an account? <a href="/login">Login here</a> </p>
+
+            <p style="text-align: center; margin-top: 15px;">
+            Go to the main page. <a href="/">Automatiom Home Suite</a> </p>
+
+        </form>
+    </div>
+
+</body>
+</html>

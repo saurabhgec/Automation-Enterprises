@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send OTP</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+
+        .custom-alert {
+            font-weight: bold;  /* Text bold */
+            font-size: 18px;    /* Font size bada */
+            padding: 15px;      /* Extra padding */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center; /* Center text */
+        }
+        .alert-danger { background-color: #ffcccc; color: #cc0000; }
+        .alert-success { background-color: #ccffcc; color: #006600; }
+        .alert-warning { background-color: #ffffcc; color: #cc6600; }
+        .alert-info { background-color: #cce5ff; color: #004085; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Forgot Password - Send OTP</h2>
+
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <form action="/sendotp" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Enter Email</label>
+                <input type="text" name="email" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Send OTP</button>
+        </form>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

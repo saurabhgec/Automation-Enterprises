@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+
+        .custom-alert {
+            font-weight: bold;  /* Bold text */
+            font-size: 18px;    /* Bigger text */
+            padding: 15px;      /* Extra padding */
+            border-radius: 10px; /* Rounded corners */
+            text-align: center; /* Center text */
+        }
+        .alert-danger { background-color: #ffcccc; color: #cc0000; }
+        .alert-success { background-color: #ccffcc; color: #006600; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">User Login</h2>
+
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} custom-alert alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <p class="text-center mt-3">
+  <a href="/google_login" class="btn btn-outline-primary">Login with Google</a>
+</p>
+
+        <p class="text-center mt-3">Don't have an account? <a href="/register">Create an account</a></p>
+        <p class="text-center mt-3"><a href="/sendotp">Forgot Password</a></p>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

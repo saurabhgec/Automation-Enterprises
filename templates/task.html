@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Management - HOME Suite</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .sidebar {
+            height: 100vh;
+            width: 200px;
+            position: fixed;
+            background-color: #2c3e50;
+            color: white;
+            padding-top: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #34495e;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin: 0;
+            padding: 10px 0;
+            font-size: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .topbar {
+            height: 60px;
+            background-color: #2980b9;
+            color: white;
+            padding: 0 20px;
+            margin-left: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .back-button {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: #34495e;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px); /* Adds lift effect */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+        }
+
+        .back-button:before {
+            content: "←";
+            margin-right: 12px;
+            font-size: 22px;
+        }
+
+        .main-content {
+            margin-left: 200px;
+            padding: 30px;
+        }
+
+        .task-container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .status.completed {
+            color: green;
+        }
+
+        .status.pending {
+            color: orange;
+        }
+
+        .status.failed {
+            color: red;
+        }
+
+        .add-task-btn {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 15px;
+        }
+
+        .add-task-btn:hover {
+            background-color: #219150;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>HOME Suite</h2>
+        <a href="/dashboard">🏠 Home</a>
+        <a href="/profile">👤 Profile</a>
+        <a href="/work-flow">🔄 Workflow</a>
+        <a href="/history">📜 History</a>
+        <a href="#">🔔 Notifications</a>
+        <a href="/login">🚪 Logout</a>
+    </div>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="{{ url_for('dashboard') }}" class="back-button"> Back</a>
+            Welcome, {{username}}
+        </div>
+        <div>📅 Task Manager</div>
+    </div>
+
+    <div class="main-content">
+        <div class="task-container">
+            <h2>🗂️ Task Management</h2>
+
+
+           <table>
+    <thead>
+        <tr>
+            <th>Task Name</th>
+            <th>Assigned Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in task %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('view_workflow') }}?workflow_id={{ item.workflow_id }}">
+                        {{ item.workflow_name }}
+                    </a>
+                </td>
+                <td>{{ item.start_date }}</td>
+                <td>{{ item.end_date }}</td>
+                <td class="status-{{ item.status|lower|replace(' ', '') }}">
+                    {{ item.status }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ workflow.name }} - Workflow Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f6fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #2a4d69;
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .field {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid #4a90e2;
+            background-color: #f9fbfd;
+        }
+
+        .field strong {
+            display: inline-block;
+            width: 150px;
+            color: #333;
+        }
+
+        a.button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        a.button:hover {
+            background-color: #3b7dc4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workflow: {{ workflow.name }}</h1>
+
+        <div class="field">
+            <strong>Start Date:</strong> {{ workflow.start_date }}
+        </div>
+        <div class="field">
+            <strong>End Date:</strong> {{ workflow.end_date }}
+        </div>
+        <div class="field">
+            <strong>Status:</strong> {{ workflow.status }}
+        </div>
+
+
+        <a href="{{ url_for('task') }}" class="button">← Back to Task List</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .profile-card {
+            max-width: 700px;
+            margin: auto;
+            border-radius: 10px;
+        }
+        .profile-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .profile-value {
+            background: #f8f9fa;
+            border: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- Navbar with Logout -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">User Profile</a>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-light">Back to Home</a>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4 profile-card">
+            <h2 class="text-center mb-4 text-primary">User Profile</h2>
+
+            <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+            <form action="{{ url_for('updated_profile') }}" method="post">
+                <input type="hidden" name="user_id" value="{{user.idusers if user else '' }}">
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="profile-label">Full Name</label>
+                        <input type="text" name="fullname" class="form-control profile-value" value="{{ user.fullname if user else '' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="profile-label">Email Address</label>
+                        <input type="email" name="email" class="form-control profile-value" value="{{ user.email if user else '' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="profile-label">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control profile-value" value="{{ user.phone if user else '' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="profile-label">Company Name</label>
+                        <input type="text" name="company" class="form-control profile-value" value="{{ user.company if user else '' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="profile-label">Username</label>
+                        <input type="text" name="username" class="form-control profile-value" value="{{ user.username if user else '' }}" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="profile-label">Created By</label>
+                        <input type="text" name="created_by" class="form-control profile-value" value="{{ user.created_by if user else '' }}" readonly>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="profile-label">User Role</label>
+                        <input type="text" name="role" class="form-control profile-value" value="{{ user.role if user else '' }}" readonly>
+                    </div>
+                </div>
+
+                <!-- Update Button -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4">Update Profile</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
