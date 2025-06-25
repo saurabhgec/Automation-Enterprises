@@ -11,6 +11,8 @@ from common.mailcinfig import mailotp
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+
+
 app = Flask(__name__)
 
 app.secret_key = "your_secret_key_here"
