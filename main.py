@@ -9,6 +9,7 @@ from services import users
 from common.excel_sheet_reader import excel_sheet_reader
 from common.mailcinfig import mailotp
 import os
+
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
@@ -67,6 +68,7 @@ def register():
 
 @app.route('/login',methods=['GET','POST'])
 def login():
+
     if request.method=='POST':
         Email=request.form['email']
         Password=request.form['password']
@@ -233,8 +235,8 @@ def updated_profile():
         company = request.form['company']
 
         cur = mysql.connection.cursor()
-        query = cur.execute("UPDATE users SET fullname = %s ,email = %s ,phone = %s ,company = %s WHERE idusers = %s",(fullname,email,phone,company,user_id))
-        print(query)
+        data=cur.execute("UPDATE users SET fullname = %s ,email = %s ,phone = %s ,company = %s WHERE idusers = %s",(fullname,email,phone,company,user_id))
+        print(data)
         mysql.connection.commit()
         cur.close()
         flash("Update profile successfully!", "success")
@@ -387,16 +389,45 @@ def task():
             'end_date':row[3],
             'status':row[4]
         })
+    mysql.connection.commit()
+    cur.close()
     return render_template('task.html', task = task , username = user)
 
+''' there is update_status '''
 
-from flask import request
+@app.route('/update_status', methods = ['POST'])
+def updated_status():
+    user_id = session['user_id']
+    print(user_id)
+    status = request.form['status']
+    comment = request.form['comment']
+    workflow_id = request.form['workflow_id']
+    print(workflow_id)
+
+    cur = mysql.connection.cursor()
+
+    cur.execute('select username from users where idusers = %s', (user_id,))
+    username = cur.fetchone()
+
+    if username:
+        username = username[0]
+    else:
+        username = 'Unknow user'
+
+    data=cur.execute("UPDATE workflows SET status = %s WHERE  workflow_id = %s and user_id = %s ",(status,workflow_id,user_id))
+
+    print(data)
+    mysql.connection.commit()
+    cur.close()
+    flash("Update Task successfully!", "success")
+
+    return render_template('task.html', username = username)
+
+
 
 
 @app.route('/workflow')
 def view_workflow():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
 
     # Query parameter se workflow_id ko fetch karna
     workflow_id = request.args.get('workflow_id')  # Gets the workflow_id from URL query string
@@ -418,6 +449,8 @@ def view_workflow():
         'end_date': workflow[2],
         'status': workflow[3]
     })
+
+
 
 
 if __name__ == '__main__':

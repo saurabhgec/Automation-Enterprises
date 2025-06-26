@@ -71,8 +71,8 @@
 
         .back-button:hover {
             background-color: #2980b9;
-            transform: translateY(-3px); /* Adds lift effect */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
 
         .back-button:before {
@@ -112,6 +112,7 @@
         th, td {
             padding: 12px;
             text-align: left;
+            vertical-align: top;
         }
 
         tbody tr:nth-child(even) {
@@ -122,20 +123,27 @@
             background-color: #ffffff;
         }
 
-        .status {
-            font-weight: bold;
+        select, input[type="text"], input[type="date"], button {
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
 
-        .status.completed {
-            color: green;
+        .update-section {
+            display: none;
+            margin-top: 6px;
         }
 
-        .status.pending {
-            color: orange;
+        .update-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            margin-top: 5px;
+            cursor: pointer;
         }
 
-        .status.failed {
-            color: red;
+        .update-btn:hover {
+            background-color: #219150;
         }
 
         .add-task-btn {
@@ -174,40 +182,135 @@
         <div>📅 Task Manager</div>
     </div>
 
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="main-content">
         <div class="task-container">
             <h2>🗂️ Task Management</h2>
 
+            <!-- Search and Filter -->
+            <div style="margin-bottom: 20px;">
+                <input type="text" id="searchInput" placeholder="🔍 Search by task name or status">
+                From: <input type="date" id="startDate">
+                To: <input type="date" id="endDate">
+                <button onclick="filterTasks()" class="add-task-btn" style="margin-right: 20px;">Filter</button>
 
-           <table>
-    <thead>
-        <tr>
-            <th>Task Name</th>
-            <th>Assigned Date</th>
-            <th>Due Date</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in task %}
-            <tr>
-                <td>
-                    <a href="{{ url_for('view_workflow') }}?workflow_id={{ item.workflow_id }}">
-                        {{ item.workflow_name }}
-                    </a>
-                </td>
-                <td>{{ item.start_date }}</td>
-                <td>{{ item.end_date }}</td>
-                <td class="status-{{ item.status|lower|replace(' ', '') }}">
-                    {{ item.status }}
-                </td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                <select id="sortOption" onchange="sortTasks()" style="float: right;">
+                    <option value="">Sort by</option>
+                    <option value="name">Task Name</option>
+                    <option value="date">Due Date</option>
+                </select>
+            </div>
 
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task Name</th>
+                        <th>Assigned Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+                <tbody id="taskBody">
+                    {% for item in task %}
+                    <tr data-name="{{ item.workflow_name }}" data-status="{{ item.status }}" data-start="{{ item.start_date }}" data-end="{{ item.end_date }}">
+                        <td>
+                            <a href="{{ url_for('view_workflow') }}?workflow_id={{ item.workflow_id }}">
+                                {{ item.workflow_name }}
+                            </a>
+                        </td>
+                        <td>{{ item.start_date }}</td>
+                        <td>{{ item.end_date }}</td>
+                        <td class="status">{{ item.status }}</td>
+                        <td>
+                            <form method="POST" action="/update_status">
+                                <input type="hidden" name="workflow_id" value="{{ item.workflow_id }}">
+                                <select name="status" onchange="handleStatusChange(this)">
+                                    <option value="">Change Status</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                                <div class="update-section">
+                                    <input type="text" name="comment" placeholder="Enter comment...">
+                                    <button type="submit" class="update-btn">Update</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <script>
+        function handleStatusChange(selectEl) {
+            const updateSection = selectEl.parentElement.querySelector(".update-section");
+            if (selectEl.value) {
+                updateSection.style.display = "block";
+            } else {
+                updateSection.style.display = "none";
+            }
+        }
+
+        function filterTasks() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const rows = document.querySelectorAll('#taskBody tr');
+
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name').toLowerCase();
+                const status = row.getAttribute('data-status').toLowerCase();
+                const startDate = row.getAttribute('data-start');
+                const endDate = row.getAttribute('data-end');
+
+                let show = true;
+
+                if (searchValue && !(name.includes(searchValue) || status.includes(searchValue))) {
+                    show = false;
+                }
+
+                if (start && startDate < start) show = false;
+                if (end && endDate > end) show = false;
+
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        function sortTasks() {
+            const option = document.getElementById('sortOption').value;
+            const tbody = document.getElementById('taskBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            let sorted;
+            if (option === 'name') {
+                sorted = rows.sort((a, b) =>
+                    a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'))
+                );
+            } else if (option === 'date') {
+                sorted = rows.sort((a, b) =>
+                    new Date(a.getAttribute('data-end')) - new Date(b.getAttribute('data-end'))
+                );
+            } else {
+                return;
+            }
+
+            tbody.innerHTML = '';
+            sorted.forEach(row => tbody.appendChild(row));
+        }
+    </script>
 
 </body>
 </html>
