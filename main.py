@@ -53,9 +53,11 @@ def register():
         new_password = request.form['confirm_password']
         created_by = request.form['created_by']
         role = request.form['role']
+        admin_id = session['admin_id']
         cur=mysql.connection.cursor()
-        data=cur.execute('INSERT into users(fullname,email,phone,company,username,password,confirm_password,created_by,role)VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)',
-        (fullname,email,phone,company,username,password,new_password,created_by,role))
+        cur.execute('INSERT into users(fullname,email,phone,company,username,password,confirm_password,created_by,role,admin_id)'
+                    'VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+        (fullname,email,phone,company,username,password,new_password,created_by,role,admin_id))
         mysql.connection.commit()
         cur.close()
         if password != new_password:
@@ -236,7 +238,7 @@ def updated_profile():
 
         cur = mysql.connection.cursor()
         data=cur.execute("UPDATE users SET fullname = %s ,email = %s ,phone = %s ,company = %s WHERE idusers = %s",(fullname,email,phone,company,user_id))
-        print(data)
+
         mysql.connection.commit()
         cur.close()
         flash("Update profile successfully!", "success")
@@ -450,9 +452,247 @@ def view_workflow():
         'status': workflow[3]
     })
 
+@app.route('/admin_register', methods=['GET', 'POST'])
+def admin_register():
+    if request.method == 'POST':
+        fullname = request.form['fullname']
+        email = request.form['email']
+        username = request.form['username']
+
+        company = request.form['company']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            flash('Passwords do not match!', 'error')
+            return redirect(url_for('admin_register'))
+
+        '''----------------sending register mail-------------'''
+
+        subject = "Admin Registration Successful - Automation Suite"
+        message = (
+            "Your admin account has been successfully registered on Automation Suite.\n"
+            "You can now log in and start managing your workflows and users.\n\n"
+            "- Automation Suite Team"
+        )
+        mailotp(email, subject, message)
+
+        '''---------------Database connection---------'''
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO admin_table (fullname, email, username,  company, password,confirm_password) VALUES ( %s, %s, %s, %s,%s,%s)",
+            (fullname, email, username,  company, password,confirm_password))
+
+        mysql.connection.commit()
+        cur.close()
+        flash('Admin registered successfully!', 'success')
+        return redirect(url_for('admin_register'))
+
+    return render_template('admin_register.html')
 
 
+@app.route('/admin_login', methods = ['GET','POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        '''-----------------connection to database---------------'''
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM admin_table WHERE username = %s AND password = %s", (username, password))
+
+        login_data = cur.fetchone()
+        if login_data:
+            session['admin_id'] = login_data[0]
+
+        mysql.connection.commit()
+        cur.close()
+
+        if login_data:
+            return redirect(url_for('admin_pannel'))
+
+        else:
+            flash('Invalid username or password. Please try again.', 'danger')
+
+
+
+
+
+    return render_template('admin_login.html')
+
+
+@app.route('/admin_send_otp', methods=['GET', 'POST'])
+def admin_send_otp():
+    if request.method == 'POST':
+        email = request.form['Email']
+        if not email:
+            flash("Email is missing! Please enter a valid email.", "error")
+            return redirect('/admin_send_otp')
+
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM admin_table WHERE email = %s', (email,))
+        data = cur.fetchone()
+
+        if data:
+            otp = random.randint(100000, 999999)
+            expiry_time = datetime.now() + timedelta(minutes=5)
+            cur.execute('UPDATE admin_table SET otp = %s, expiry_time = %s WHERE email = %s',
+                        (otp, expiry_time, email))
+            mysql.connection.commit()
+            cur.close()
+
+            subject = "Password Reset OTP"
+            message = f"Your OTP for password reset is: {otp}. It is valid for 5 minutes."
+
+            if mailotp(email, subject, message):
+                flash("OTP sent successfully! Check your email.", "success")
+                return redirect('/admin_reset_password')
+            else:
+                flash("Failed to send OTP. Try again.", "error")
+                return redirect('/admin_send_otp')
+        else:
+            flash("Email not found in admin records.", "error")
+            return redirect('/admin_send_otp')
+
+    return render_template('admin_send_otpp.html')
+
+@app.route('/admin_reset_password', methods=['GET', 'POST'])
+def admin_reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        otp = request.form['otp']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            flash("Passwords do not match.", "error")
+            return redirect('/admin_reset_password')
+
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT otp, expiry_time FROM admin_table WHERE email=%s", (email,))
+        data = cur.fetchone()
+
+        if not data:
+            flash("Invalid email or OTP.", "error")
+            return redirect('/admin_reset_password')
+
+        db_otp, expiry_time_str = data
+
+        if otp != str(db_otp):
+            flash("Invalid OTP!", "error")
+            return redirect('/admin_reset_password')
+
+        expiry_time = datetime.strptime(str(expiry_time_str), "%Y-%m-%d %H:%M:%S.%f")
+        if datetime.now() > expiry_time:
+            flash("OTP expired! Please request a new one.", "error")
+            return redirect('/admin_send_otp')
+
+        cur.execute('UPDATE admin_table SET password_hash=%s, otp=NULL, expiry_time=NULL WHERE email=%s',
+                    (new_password, email))
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Password reset successfully!", "success")
+        return redirect('/login')
+
+    return render_template('admin_reset_password.html')
+
+@app.route('/admin_profile', methods = ['GET','POST'])
+def admin_profile():
+
+    if request.method == 'GET':
+        admin_id = session['admin_id']
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT idadmin_table,fullname,email,username,company FROM admin_table WHERE idadmin_table = %s',(admin_id,))
+        admin_profile = cur.fetchone()
+        #print(admin_profile)
+        cur.close()
+        if admin_profile:
+            adminData = {
+                'idadmin_table':admin_profile[0],
+                'fullname':admin_profile[1],
+                'email':admin_profile[2],
+                'username':admin_profile[3],
+                'company':admin_profile[4],
+            }
+            #print(adminData)
+            return render_template('admin_profile.html',admindata = adminData)
+        else:
+
+            flash("Invalid admin session", "error")
+            return redirect('/admin_login')
+    return render_template('admin_profile.html')
+
+
+@app.route('/admin_update_profile',methods = ['POST'])
+def admin_updated_profile():
+    if request.method == 'POST':
+        fullname = request.form['fullname']
+        email = request.form['email']
+        company = request.form['company']
+
+
+        admin_id = session['admin_id']
+
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE admin_table SET fullname = %s,email = %s,company = %s WHERE idadmin_table = %s",(fullname,email,company,admin_id))
+        mysql.connection.commit()
+        cur.close()
+        flash("Profile updated successfully!", "success")
+
+    return redirect(url_for('admin_profile'))
+
+@app.route('/create_task', methods=['GET', 'POST'])
+def create_task():
+    if 'admin_id' not in session:
+        return redirect('/admin_login')
+
+    admin_id = session['admin_id']
+    #print(admin_id)
+    cur = mysql.connection.cursor()
+
+
+    cur.execute("SELECT idusers, fullname FROM users WHERE admin_id = %s", (admin_id,))
+
+    users = cur.fetchall()
+    #print(users)
+
+    if request.method == 'POST':
+        task_name = request.form['task_name']
+        task_description = request.form['task_description']
+        priority = request.form['priority']
+        due_date = request.form['due_date']
+        status = request.form['status']
+        assigned_user = request.form['assigned_user']
+
+
+        data=cur.execute("""
+            INSERT INTO admin_create_task 
+            (task_name, task_description, priority, due_date, status, assigned_user_id, created_by_admin_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (task_name, task_description, priority, due_date, status, assigned_user, admin_id))
+        #print(data)
+        mysql.connection.commit()
+        flash("Task created successfully!", "success")
+        return redirect("/create_task")
+
+
+    return render_template('create_task.html', users=users)
+
+
+
+@app.route('/admin_pannel')
+def admin_pannel():
+    admin_id = session['admin_id']
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM admin_table WHERE idadmin_table = %s",(admin_id,))
+    data = cur.fetchone()
+    print(data)
+    if data:
+        data = data[1]
+    else:
+        data = 'unknownuser'
+    cur.close()
+    return render_template('admin_panel.html',data = data)
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5002, debug=True)
+    app.run(host='localhost', port=5003, debug=True)
 

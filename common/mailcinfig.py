@@ -14,3 +14,4 @@ def mailotp(email,subject,message):
     server.quit()
 
     return 'Successfully'
+

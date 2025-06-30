@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Task - HOME Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 100px auto;
+            width: 500px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #2980b9;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1f6ca4;
+        }
+
+        a {
+            text-decoration: none;
+            color: #2980b9;
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>➕ Create New Task</h2>
+    <form method="POST" action="/admin/create_task">
+        <label>Task Title</label>
+        <input type="text" name="title" required>
+
+        <label>Description</label>
+        <textarea name="description" rows="4" required></textarea>
+
+        <label>Assign To (Username)</label>
+        <input type="text" name="assign_to" required>
+
+        <label>Due Date</label>
+        <input type="date" name="due_date" required>
+
+        <button type="submit">📤 Create Task</button>
+    </form>
+
+    <a href="/">← Back to Dashboard</a>
+</div>
+
+</body>
+</html>

@@ -1,90 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automation Suite - Home</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background: #f4f4f4; color: #333; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Automation Suite - Home</title>
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        /* Header Styling */
-        .header { background: #007bff; color: white; padding: 25px; text-align: center; font-size: 28px; font-weight: bold; }
+    body {
+      background: #f4f6f8;
+      color: #333;
+    }
 
-        /* Navigation Bar */
-        .nav { display: flex; justify-content: space-between; padding: 15px 50px; background: #0056b3; align-items: center; }
-        .nav a { color: white; text-decoration: none; font-size: 16px; font-weight: bold; padding: 10px; transition: 0.3s; }
-        .nav a:hover { color: #ddd; }
-        .nav .auth a { background: white; color: #0056b3; padding: 10px 18px; border-radius: 5px; font-weight: bold; text-transform: uppercase; }
-        .nav .auth a:hover { background: #ddd; }
+    /* Header */
+    .header {
+      background: #007bff;
+      color: white;
+      padding: 25px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+    }
 
-        /* Hero Section */
-        .hero { text-align: center; padding: 80px 20px; background: white; }
-        .hero h1 { font-size: 42px; color: #0056b3; margin-bottom: 10px; }
-        .hero p { font-size: 20px; margin-bottom: 20px; }
-        .btn { padding: 14px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 20px; font-weight: bold; transition: 0.3s; }
-        .btn:hover { background: #0056b3; }
+    /* Navigation Bar */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 60px;
+      background: #0056b3;
+    }
 
-        /* Dashboard Cards */
-        .dashboard { display: flex; justify-content: center; gap: 30px; margin: 40px auto; flex-wrap: wrap; }
-        .box { width: 320px; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 5px 10px rgba(0,0,0,0.15); text-align: center; }
-        .box h3 { color: #0056b3; font-size: 22px; margin-bottom: 10px; }
-        .box p { font-size: 16px; margin-bottom: 15px; }
-        .box .btn { display: inline-block; width: 80%; padding: 12px 18px; font-size: 18px; }
+    .nav-left a,
+    .nav-right a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: 0.3s;
+    }
 
-        /* Footer */
-        .footer { background: #333; color: white; text-align: center; padding: 20px; margin-top: 50px; font-size: 14px; }
-    </style>
+    .nav-left a:hover,
+    .nav-right a:hover {
+      color: #ddd;
+    }
+
+    .nav-right .btn-link {
+      background: white;
+      color: #0056b3;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-transform: uppercase;
+    }
+
+    .nav-right .btn-link:hover {
+      background: #ddd;
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 180px;
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 4px;
+    }
+
+    .dropdown-content a {
+      color: #0056b3;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      font-weight: normal;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px;
+      background: white;
+    }
+
+    .hero h1 {
+      font-size: 46px;
+      color: #0056b3;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: #444;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      padding: 14px 26px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    /* Dashboard Cards */
+    .dashboard {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin: 50px auto;
+      max-width: 1200px;
+    }
+
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .box:hover {
+      transform: translateY(-5px);
+    }
+
+    .box h3 {
+      font-size: 22px;
+      color: #0056b3;
+      margin-bottom: 10px;
+    }
+
+    .box p {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    .box .btn {
+      width: 100%;
+      font-size: 16px;
+    }
+
+    /* Footer */
+    .footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      margin-top: 60px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="header">
-        Automation Suite - Automate Your Workflows
+  <div class="header">
+    Automation Suite - Automate Your Workflows
+  </div>
+
+  <div class="nav">
+    <div class="nav-left">
+      <a href="#">Home</a>
+      <a href="#">Workflows</a>
+      <a href="#">Reports</a>
+      <a href="#">Settings</a>
+      <a href="#">Help</a>
+    </div>
+    <div class="nav-right">
+      <a href="/login" class="btn-link">User Login</a>
+      <a href="/register" class="btn-link">User Register</a>
+
+      <div class="dropdown">
+        <a href="#" class="btn-link">Admin ▾</a>
+        <div class="dropdown-content">
+          <a href="/admin_login">Admin Login</a>
+          <a href="/admin_register">Admin Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Welcome to Automation Suite</h1>
+    <p>Effortlessly manage and automate your workflows with smart, user-friendly tools.</p>
+    <a href="create-workflow.html" class="btn">Get Started</a>
+  </div>
+
+  <div class="dashboard">
+    <div class="box">
+      <h3>Create New Workflow</h3>
+      <p>Design and automate tasks easily with our visual workflow builder.</p>
+      <a href="create-workflow.html" class="btn">Start Now</a>
     </div>
 
-    <div class="nav">
-        <div>
-            <a href="#">Home</a>
-            <a href="#">Workflows</a>
-            <a href="#">Reports</a>
-            <a href="#">Settings</a>
-            <a href="#">Help</a>
-        </div>
-        <div class="auth">
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
-        </div>
+    <div class="box">
+      <h3>Recent Workflows</h3>
+      <p>Access and manage your recently created workflows.</p>
+      <a href="workflows.html" class="btn">View Workflows</a>
     </div>
 
-    <div class="hero">
-        <h1>Welcome to Automation Suite</h1>
-        <p>Effortlessly manage and automate your workflows with our powerful tools.</p>
-        <a href="create-workflow.html" class="btn">Get Started</a>
+    <div class="box">
+      <h3>Execution Reports</h3>
+      <p>Review logs and execution history to optimize workflow performance.</p>
+      <a href="reports.html" class="btn">View Reports</a>
     </div>
+  </div>
 
-    <div class="dashboard">
-        <div class="box">
-            <h3>Create New Workflow</h3>
-            <p>Design and automate tasks easily.</p>
-            <a href="create-workflow.html" class="btn">Start Now</a>
-        </div>
-
-        <div class="box">
-            <h3>Recent Workflows</h3>
-            <p>View and manage your latest workflows.</p>
-            <a href="workflows.html" class="btn">View Workflows</a>
-        </div>
-
-        <div class="box">
-            <h3>Execution Reports</h3>
-            <p>Check logs and workflow execution history.</p>
-            <a href="reports.html" class="btn">View Reports</a>
-        </div>
-    </div>
-
-    <div class="footer">
-        © 2025 Automation Suite | Help Center | Privacy Policy | Terms of Service
-    </div>
+  <div class="footer">
+    © 2025 Automation Suite | Help Center | Privacy Policy | Terms of Service
+  </div>
 
 </body>
 </html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login - Automation Suite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .login-box {
+      background: #ffffff;
+      padding: 40px 35px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #0056b3;
+      margin-bottom: 25px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+
+    .links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #0056b3;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    .flash-message {
+      width: 400px;
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error   { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .info    { background-color: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+  </style>
+</head>
+<body>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Login Form -->
+  <form class="login-box" method="POST" action="/admin_login">
+    <h2>Admin Login</h2>
+
+    <input type="text" name="username" placeholder="Admin Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <input type="submit" value="Login">
+
+    <div class="links">
+      <p>Don't have an account? <a href="/admin_register">Create an account</a></p>
+      <p><a href="/admin_send_otp">Forgot Password?</a></p>
+    </div>
+  </form>
+
+</body>
+</html>
